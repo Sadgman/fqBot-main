@@ -1,5 +1,6 @@
 const { Client, LocalAuth, MessageMedia, RemoteAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
+const prapido = import ('./pasorapido.js')
 
 const client = new Client({
     restartOnAuthFail: true,
@@ -22,8 +23,16 @@ client.on('qr', qr => {
     qrcode.generate(qr, {small: true});
 });
 
+setInterval(async () => {
+    if((await prapido).prapido <= 35000){
+        client.sendMessage('18099708194@c.us', 'Se requiere recarga de paso rapido')
+    }
+}, 1000);
+
 client.on('message', async (message) => {
-    console.log(message.body)
+    const chat = message.getChat()
+    message.
+    console.log(message)
     const { default: rncvalidator } = await import('./rncvalidate.js');
     if(message.body.includes('rnc: ')){
         message.reply('validando...')
