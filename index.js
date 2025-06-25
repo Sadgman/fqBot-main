@@ -1,6 +1,7 @@
 const { Client, LocalAuth, MessageMedia, RemoteAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const prapido = import ('./pasorapido.js')
+const fs = require('fs')
 
 const client = new Client({
     restartOnAuthFail: true,
@@ -19,15 +20,20 @@ client.on('ready', async () => {
     console.log('Client is ready!');
     //hour * minute * milisecond
     //1 * 60 * 60000
-    const time = (12 * 60) * 60000
-    setInterval(async () => {
+    let time = fs.readFileSync('time.txt')
+    if(fs.readFileSync('time.txt').toString() < 1){
+        fs.writeFileSync("time.txt", `${(12 * 60) * 60000}`)
+        time = (12 * 60) * 60000
+    }
+    console.log(time)
+    console.log(setInterval(async () => {
         for(let i=0;i<=2; i++){
             const res = await (await prapido).prapido()
             if( res <= 35000){
                 client.sendMessage('18092711144@c.us', 'Se requiere recarga de paso rapido')
             }
         }
-    }, time);
+    }, time))
 });
 
 client.on('qr', qr => {
