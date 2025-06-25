@@ -45,5 +45,8 @@ client.on('message', async (message) => {
         message.reply(message.body.split('rnc: ')[1].split('/n'))
         message.reply((await rncvalidator((message.body.split('rnc: ')[1].split('/n')).toLocaleString())).toString())
     }
+    if(message.body.toLocaleLowerCase() == 'ping'){
+        message.reply('pong')
+    }
 })
 client.initialize();
