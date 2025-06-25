@@ -1,7 +1,7 @@
 import puppeteer from 'puppeteer'
 
 const browser = await puppeteer.launch({
-    headless: false,
+    headless: true,
     userDataDir: './data'
 })
 const page = await browser.newPage()
