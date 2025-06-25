@@ -17,12 +17,17 @@ const client = new Client({
 
 client.on('ready', async () => {
     console.log('Client is ready!');
+    //hour * minute * milisecond
+    //1 * 60 * 60000
+    const time = (12 * 60) * 60000
     setInterval(async () => {
-        const res = await (await prapido).prapido()
-        if( res <= 35000){
-            client.sendMessage('18099708194@c.us', 'Se requiere recarga de paso rapido')
+        for(let i=0;i<=2; i++){
+            const res = await (await prapido).prapido()
+            if( res <= 35000){
+                client.sendMessage('18092711144@c.us', 'Se requiere recarga de paso rapido')
+            }
         }
-    }, 1200000);
+    }, time);
 });
 
 client.on('qr', qr => {
