@@ -16,24 +16,31 @@ const client = new Client({
     },
 });
 
-client.on('ready', async () => {
-    console.log('Client is ready!');
+async function comp(){
     //hour * minute * milisecond
     //1 * 60 * 60000
     let time = fs.readFileSync('time.txt')
     if(fs.readFileSync('time.txt').toString() < 1){
-        fs.writeFileSync("time.txt", `${(12 * 60) * 60000}`)
-        time = (12 * 60) * 60000
+        fs.writeFileSync("time.txt", 1200000)
+    //time = (12 * 60) * 60000
+    }//`${(12 * 60) * 60000}`
+    const res = await (await prapido).prapido()
+    if( res <= 35000){
+        client.sendMessage('18092711144@c.us', 'Se requiere recarga de paso rapido')
     }
-    console.log(time)
-    console.log(setInterval(async () => {
+    setInterval(async () => {
         for(let i=0;i<=2; i++){
             const res = await (await prapido).prapido()
             if( res <= 35000){
                 client.sendMessage('18092711144@c.us', 'Se requiere recarga de paso rapido')
             }
         }
-    }, time))
+    }, 1200000)
+}
+
+client.on('ready', async () => {
+    console.log('Client is ready!');
+    await comp();
 });
 
 client.on('qr', qr => {
