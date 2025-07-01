@@ -17,22 +17,16 @@ const client = new Client({
 });
 
 async function comp(){
-    //hour * minute * milisecond
-    //1 * 60 * 60000
-    let time = fs.readFileSync('time.txt')
-    if(fs.readFileSync('time.txt').toString() < 1){
-        fs.writeFileSync("time.txt", 1200000)
-    //time = (12 * 60) * 60000
-    }//`${(12 * 60) * 60000}`
     const res = await (await prapido).prapido()
     if( res <= 35000){
-        client.sendMessage('18092711144@c.us', 'Se requiere recarga de paso rapido')
+        client.sendMessage('18092711144@c.us', `Se requiere recarga de paso rapido saldo actual de ${res}`)
     }
     setInterval(async () => {
         for(let i=0;i<=2; i++){
             const res = await (await prapido).prapido()
+            console.log(res <= 35000? `Se require recarga  saldo actual ${res}`: false)
             if( res <= 35000){
-                client.sendMessage('18092711144@c.us', 'Se requiere recarga de paso rapido')
+                client.sendMessage('18092711144@c.us', `Se requiere recarga de paso rapido saldo actual de ${res}`)
             }
         }
     }, 1200000)
@@ -49,14 +43,17 @@ client.on('qr', qr => {
 
 
 
-client.on('message', async (message) => {
+client.on('message_create', async (message) => {
+    if(message?.body == '' || !message?.body){
+        return;
+    }
     const chat = message.getChat()
     const { default: rncvalidator } = await import('./rncvalidate.js');
     if(message.body.includes('rnc: ')){
         message.reply('validando...')
-        console.log(message.body.split('rnc: ')[0])
-        message.reply(message.body.split('rnc: ')[1].split('/n'))
-        message.reply((await rncvalidator((message.body.split('rnc: ')[1].split('/n')).toLocaleString())).toString())
+        const data = await rncvalidator(message.body?.split('rnc: ')[1]?.split('\n').toString())
+        message.reply(`rnc ${data?.rnc}\nnombre o razon social: ${data?.namereason}\nnombre comercial ${data?.comercialname}\ncategoria ${data?.category}\nRegimen de pagos ${data?.payscheme}\nestado ${data?.status}\nActividad Comercial ${data?.economicactivity}\nadministracion local ${data?.admlocal}\nFacturador Electrónico ${data?.facElec}\nLicencias de Comercialización de VHM ${data?.VHM}`)
+        // message.reply(message.body.split('rnc: ')?.[1]?.split('\n'))
     }
     if(message.body.toLocaleLowerCase() == 'ping'){
         message.reply('pong')
