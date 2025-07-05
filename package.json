@@ -3,6 +3,7 @@
         "node": ">=22.13.1"
     },
     "dependencies": {
+        "pm2": "^6.0.8",
         "puppeteer": "^24.10.2",
         "qrcode-terminal": "^0.12.0",
         "whatsapp-web.js": "^1.30.0"

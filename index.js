@@ -1,6 +1,6 @@
 const { Client, LocalAuth, MessageMedia, RemoteAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
-const prapido = import ('./pasorapido.js')
+const prapido = import ('./pasorapido.mjs')
 const fs = require('fs')
 
 const client = new Client({
@@ -48,15 +48,19 @@ client.on('message_create', async (message) => {
         return;
     }
     const chat = message.getChat()
-    const { default: rncvalidator } = await import('./rncvalidate.js');
     if(message.body.includes('rnc: ')){
+        const { default: rncvalidator } = await import('./rncvalidate.mjs');
         message.reply('validando...')
-        const data = await rncvalidator(message.body?.split('rnc: ')[1]?.split('\n').toString())
-        message.reply(`rnc ${data?.rnc}\nnombre o razon social: ${data?.namereason}\nnombre comercial ${data?.comercialname}\ncategoria ${data?.category}\nRegimen de pagos ${data?.payscheme}\nestado ${data?.status}\nActividad Comercial ${data?.economicactivity}\nadministracion local ${data?.admlocal}\nFacturador Electrónico ${data?.facElec}\nLicencias de Comercialización de VHM ${data?.VHM}`)
+        let data = await rncvalidator(message.body?.split('rnc: ')[1]?.split('\n').toString())
+        message.reply(data?.rnc? `rnc ${data?.rnc}\nnombre o razon social: ${data?.namereason}\nnombre comercial ${data?.comercialname}\ncategoria ${data?.category}\nRegimen de pagos ${data?.payscheme}\nestado ${data?.status}\nActividad Comercial ${data?.economicactivity}\nadministracion local ${data?.admlocal}\nFacturador Electrónico ${data?.facElec}\nLicencias de Comercialización de VHM ${data?.VHM}` : "no se encuentra inscrito como contribuyente ")
         // message.reply(message.body.split('rnc: ')?.[1]?.split('\n'))
     }
     if(message.body.toLocaleLowerCase() == 'ping'){
         message.reply('pong')
+    }
+    if(message.body.toLocaleLowerCase() === ".paso"){
+        const res = await (await prapido).prapido()
+        message.reply(`El balance del paso rapido es de ${res}`)
     }
 })
 client.initialize();
