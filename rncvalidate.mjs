@@ -1,13 +1,12 @@
 import puppeteer from 'puppeteer';
 
-let info = []
 const  browser = await puppeteer.launch({
     headless: false
 })
 const page = await browser.newPage();
 export default async function consultarnc(text){
     try{
-        page.reload()
+        let info = []
         page.goto("https://dgii.gov.do/app/WebApps/ConsultasWeb2/ConsultasWeb/consultas/rnc.aspx")
         await page.waitForSelector('#cphMain_txtRNCCedula');
         const rncocedula = text?.replace(/[^0-9]/g, '');
