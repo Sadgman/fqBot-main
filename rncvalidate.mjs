@@ -10,6 +10,7 @@ export default async function consultarnc(text){
         page.goto("https://dgii.gov.do/app/WebApps/ConsultasWeb2/ConsultasWeb/consultas/rnc.aspx")
         await page.waitForSelector('#cphMain_txtRNCCedula');
         const rncocedula = text?.replace(/[^0-9]/g, '');
+        console.log(rncocedula)
         const VisibleAndActive = async (label) => {
             return await page.$(label) && await page.waitForSelector(label, { visible: true, timeout: 1000 }).catch(() => null)
         }
@@ -32,6 +33,7 @@ export default async function consultarnc(text){
                     info.push(await selector(`table tr:nth-of-type(${i}) td:nth-of-type(2)`))
                 }
             }
+            console.log(text)
             return {
                 mWarning: m,
                 rnc: info[0],
@@ -47,20 +49,21 @@ export default async function consultarnc(text){
         
             }
         }else{    
-            await page.waitForSelector('#cphMain_btnBuscarPorRNC'); 
-            await page.click('#cphMain_btnBuscarPorRNC'); 
-            await page.click('#aBusquedaPorRazonSocial');
-            // page.waitForSelector('input#cphMain_txtRazonSocial');
-            // page.type("input#cphMain_txtRazonSocial", text);
-            await page.waitForSelector('#cphMain_txtRazonSocial', { visible: true }); 
-            await page.type('#cphMain_txtRazonSocial', text); 
-            await page.waitForSelector('#cphMain_btnBuscarPorRazonSocial', { visible: true }); 
-            await page.click('#cphMain_btnBuscarPorRazonSocial');
-            const m = await VisibleAndActive("#cphMain_lblInformacion") ? await page.$eval('#cphMain_lblInformacion', t => t?.textContent) : ''
-            if(m.includes('Ocurrió un error')){
-                await rncocedula(rncocedula)
-            }
-            return m
+            // await page.waitForSelector('#cphMain_btnBuscarPorRNC'); 
+            // await page.click('#cphMain_btnBuscarPorRNC'); 
+            // await page.click('#aBusquedaPorRazonSocial');
+            // // page.waitForSelector('input#cphMain_txtRazonSocial');
+            // // page.type("input#cphMain_txtRazonSocial", text);
+            // await page.waitForSelector('#cphMain_txtRazonSocial', { visible: true }); 
+            // await page.type('#cphMain_txtRazonSocial', text); 
+            // await page.waitForSelector('#cphMain_btnBuscarPorRazonSocial', { visible: true }); 
+            // await page.click('#cphMain_btnBuscarPorRazonSocial');
+            // const m = await VisibleAndActive("#cphMain_lblInformacion") ? await page.$eval('#cphMain_lblInformacion', t => t?.textContent) : ''
+            // if(m.includes('Ocurrió un error')){
+            //     await rncocedula(rncocedula)
+            // }
+            // return m
+            return
             // page.waitForSelector("input[name='ctl00$cphMain$txtRazonSocial']");
             // page.type("input[name='ctl00$cphMain$txtRazonSocial']", text);
         }
