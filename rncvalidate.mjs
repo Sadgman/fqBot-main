@@ -45,7 +45,8 @@ export default async function consultarnc(text){
                 economicactivity: info[6],
                 admlocal: info[7],
                 facElec: info[8],
-                VHM: info[9]
+                VHM: info[9],
+                cedulaornc: rncocedula?.length === 9 ? "es un rnc" : "es una cedula"
         
             }
         }else{    
