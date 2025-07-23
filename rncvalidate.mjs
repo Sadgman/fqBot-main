@@ -1,7 +1,7 @@
 import puppeteer from 'puppeteer';
 
 const  browser = await puppeteer.launch({
-    headless: false
+    headless: true
 })
 const page = await browser.newPage();
 export default async function consultarnc(text){

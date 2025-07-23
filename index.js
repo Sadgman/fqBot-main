@@ -15,7 +15,6 @@ const client = new Client({
         ],
     },
 });
-
 async function comp(){
     const res = await (await prapido).prapido()
     if( res <= 35000){
@@ -44,7 +43,14 @@ client.on('qr', qr => {
 const PosiblesRrn = [
     "rnc: ",
     "rnc ",
-    "cedula "
+    "cedula ",
+    "cedula.",
+    "rnc.",
+    "rnc .",
+    "cedula .",
+    "cedula: ",
+    "cédula  ",
+    "cédula. "
 ]
 
 
@@ -53,24 +59,58 @@ client.on('message_create', async (message) => {
     if(message?.body == '' || !message?.body){
         return;
     }
+    console.log('Mensaje recibido:', message.body);
     const contact = await message.getContact();
     const numbot = client.info.wid.user
     const msg = message.body.toLocaleLowerCase()
     const eselbot =  contact.id.user !== numbot
+    const hasKeyword = PosiblesRrn.some(keyword => msg.includes(keyword));
 
-    console.log(PosiblesRrn.includes(msg))
+    console.log(hasKeyword)
 
     //&& eselbot
-    if(msg.includes("rnc: ") ){
+    if(hasKeyword && eselbot ){
         const { default: rncvalidator } = await import('./rncvalidate.mjs');
         message.reply('validando...')
+
+        let rnc = null;
+        const lines = msg.split('\n').map(line => line.trim()); 
         
-        const position = message.body?.toLocaleLowerCase().split('').join('').split('\n').findIndex(f => f.includes('rnc'))
-        const rnc = message.body?.toLocaleLowerCase().split('').join('').split('\n')[position].trim()
+        // Encontrar el índice de la línea que contiene la palabra clave
+        const lineIndex = lines.findIndex(line => 
+            PosiblesRrn.some(keyword => line.includes(keyword))
+        );
+
+        if (lineIndex !== -1) {
+            const lineWithKeyword = lines[lineIndex];
+            const keywordFound = PosiblesRrn.find(keyword => lineWithKeyword.includes(keyword));
+            
+            let potentialRnc = lineWithKeyword.split(keywordFound)[1].trim();
+
+            if (!potentialRnc && lines.length > lineIndex + 1) {
+                potentialRnc = lines[lineIndex + 1].trim();
+            }
+
+            if (potentialRnc) {
+                const match = potentialRnc.match(/[\d-]+/);
+                if (match) {
+                    rnc = match[0];
+                }
+            }
+        }
+        console.log('RNC o Cedula extraído:', rnc);
+        
+        // const position = message.body?.toLocaleLowerCase().split('').join('').split('\n').findIndex(f => msg.includes(f))
+        // console.log('Posición encontrada:', position);
+        // const rnc = message.body?.toLocaleLowerCase().split('').join('').split('\n')[position].trim()
+        // console.log('RNC o Cedula:', rnc);
         let data = await rncvalidator(rnc)
         
         message.reply(data?.rnc? `rnc ${data?.rnc}\nnombre o razon social: ${data?.namereason}\nnombre comercial ${data?.comercialname}\ncategoria ${data?.category}\nRegimen de pagos ${data?.payscheme}\nestado ${data?.status}\nActividad Comercial ${data?.economicactivity}\nadministracion local ${data?.admlocal}\nFacturador Electrónico ${data?.facElec}\nLicencias de Comercialización de VHM ${data?.VHM}` : "no se encuentra inscrito como contribuyente ")
         // message.reply(message.body.split('rnc: ')?.[1]?.split('\n'))
+        if(data?.status === "SUSPENDIDO"){
+            message.reply("El cliente se encuentra suspendido, no podremos registrarlo.")
+        }
     }
     if(message.body.toLocaleLowerCase() == 'ping'){
         message.reply('pong')
