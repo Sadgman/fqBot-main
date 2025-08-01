@@ -2,7 +2,7 @@ import puppeteer from 'puppeteer'
 import dotenv from 'dotenv'
 dotenv.config()
 const browser = await puppeteer.launch({
-    headless: true,
+    headless: false,
     userDataDir: './data'
 })
 const page = await browser.newPage()
@@ -10,19 +10,25 @@ const page = await browser.newPage()
 export async function prapido() {
     console.log('Comprobando paso rapido...')
     page.on('framenavigated', async (pestana) => {
-        if(pestana == page.mainFrame()){
-            const urllogin = pestana.url()
-            if(urllogin === "https://clientes.pasorapido.gob.do/login"){
-                    const nombre = "input[name='email']"
-                    const contra = "input[name='password']"
-                    await page.waitForSelector(nombre)
-                    await page.type(nombre, process.env.nombre)
-                    await page.type(contra, process.env.contra)
-                    page.click("input[type='checkbox']")
-                    page.click("button[type='submit']")
-                    await page.waitForNavigation()
-                    await page.waitForNetworkIdle()
+        try {
+            if(pestana == page.mainFrame()){
+                const urllogin = pestana.url()
+                if(urllogin === "https://clientes.pasorapido.gob.do/login"){
+                        const nombre = "input[name='email']"
+                        const contra = "input[name='password']"
+                        const checkbox = "input[type='checkbox']" 
+                        await page.waitForSelector(nombre)
+                        await page.type(nombre, process.env.nombre)
+                        await page.type(contra, process.env.contra)
+                        await page.waitForSelector(checkbox)
+                        await page.click(checkbox)
+                        await page.click("button[type='submit']")
+                        await page.waitForNavigation()
+                        await page.waitForNetworkIdle()
+                }
             }
+        } catch (error) {
+            console.error('Error en la navegación de la página:', error);
         }
     })
     try{
@@ -37,6 +43,6 @@ export async function prapido() {
         return total
     }catch{
         console.warn("hubo un error reintentando");
-        await prapido()
+        return
     }
 }

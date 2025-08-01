@@ -1,7 +1,7 @@
 import puppeteer from 'puppeteer';
 
 const  browser = await puppeteer.launch({
-    headless: true
+    headless: false
 })
 const page = await browser.newPage();
 export default async function consultarnc(text){
@@ -10,7 +10,6 @@ export default async function consultarnc(text){
         page.goto("https://dgii.gov.do/app/WebApps/ConsultasWeb2/ConsultasWeb/consultas/rnc.aspx")
         await page.waitForSelector('#cphMain_txtRNCCedula');
         const rncocedula = text?.replace(/[^0-9]/g, '');
-        console.log(rncocedula)
         const VisibleAndActive = async (label) => {
             return await page.$(label) && await page.waitForSelector(label, { visible: true, timeout: 1000 }).catch(() => null)
         }
@@ -33,7 +32,6 @@ export default async function consultarnc(text){
                     info.push(await selector(`table tr:nth-of-type(${i}) td:nth-of-type(2)`))
                 }
             }
-            console.log(text)
             return {
                 mWarning: m,
                 rnc: info[0],

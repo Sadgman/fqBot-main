@@ -16,19 +16,23 @@ const client = new Client({
     },
 });
 async function comp(){
-    const res = await (await prapido).prapido()
-    if( res <= 35000){
-        client.sendMessage('18092711144@c.us', `Se requiere recarga de paso rapido saldo actual de ${res}`)
-    }
-    setInterval(async () => {
-        for(let i=0;i<=2; i++){
-            const res = await (await prapido).prapido()
-            console.log(res <= 35000? `Se require recarga  saldo actual ${res}`: false)
-            if( res <= 35000){
-                client.sendMessage('18092711144@c.us', `Se requiere recarga de paso rapido saldo actual de ${res}`)
-            }
+    try{
+        const res = await (await prapido).prapido()
+        if( res <= 35000){
+            client.sendMessage('18092711144@c.us', `Se requiere recarga de paso rapido saldo actual de ${res}`)
         }
-    }, 1200000)
+        setInterval(async () => {
+            for(let i=0;i<=2; i++){
+                const res = await (await prapido).prapido()
+                console.log(res <= 35000? `Se require recarga  saldo actual ${res}`: false)
+                if( res <= 35000){
+                    client.sendMessage('18092711144@c.us', `Se requiere recarga de paso rapido saldo actual de ${res}`)
+                }
+            }
+        }, 1200000)
+    }catch (error) {
+        return "0000"
+    }
 }
 
 client.on('ready', async () => {
@@ -68,10 +72,8 @@ client.on('message_create', async (message) => {
 
     console.log(hasKeyword)
 
-    //&& eselbot
     if(hasKeyword && eselbot ){
         const { default: rncvalidator } = await import('./rncvalidate.mjs');
-        message.reply('validando...')
 
         let rnc = null;
         const lines = msg.split('\n').map(line => line.trim()); 
@@ -98,16 +100,24 @@ client.on('message_create', async (message) => {
                 }
             }
         }
+        rnc = rnc?.replace(/[^0-9]/g, '');
         console.log('RNC o Cedula extraído:', rnc);
         
-        // const position = message.body?.toLocaleLowerCase().split('').join('').split('\n').findIndex(f => msg.includes(f))
-        // console.log('Posición encontrada:', position);
-        // const rnc = message.body?.toLocaleLowerCase().split('').join('').split('\n')[position].trim()
-        // console.log('RNC o Cedula:', rnc);
+        if(rnc?.length === 9){
+            message.reply(`Tipo de documento rnc`)   
+        }else if(rnc?.length === 11){
+            message.reply('Tipo de documento Cédula')
+        }else{
+            message.reply('Revise ese RNC o Cédula')
+            return
+        }
+
+        message.reply('validando...')
+
         let data = await rncvalidator(rnc)
         
         message.reply(data?.rnc? `rnc ${data?.rnc}\nnombre o razon social: ${data?.namereason}\nnombre comercial ${data?.comercialname}\ncategoria ${data?.category}\nRegimen de pagos ${data?.payscheme}\nestado ${data?.status}\nActividad Comercial ${data?.economicactivity}\nadministracion local ${data?.admlocal}\nFacturador Electrónico ${data?.facElec}\nLicencias de Comercialización de VHM ${data?.VHM}` : "no se encuentra inscrito como contribuyente ")
-        // message.reply(message.body.split('rnc: ')?.[1]?.split('\n'))
+      
         if(data?.status === "SUSPENDIDO"){
             message.reply("El cliente se encuentra suspendido, no podremos registrarlo.")
         }
