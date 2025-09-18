@@ -17,9 +17,18 @@ export async function prapido() {
                         const nombre = "input[name='email']"
                         const contra = "input[name='password']"
                         const checkbox = "input[type='checkbox']" 
+                        const isexist = async (n) => {
+                            console.log("comprobando")
+                            const element = await page.$(n);
+                            const value = await page?.evaluate(el => el?.value, element);
+                            return await value
+                        }
+                        // rollos vacios de flex c3332 84
+                        console.log(await isexist(nombre))
                         await page.waitForSelector(nombre)
-                        await page.type(nombre, process.env.nombre)
-                        await page.type(contra, process.env.contra)
+                        await page.evaluate()
+                        await isexist(nombre) != '' ? await page.type(nombre, process.env.nombre) : null
+                        await isexist(contra) != '' ? await page.type(contra, process.env.contra) : null
                         await page.waitForSelector(checkbox)
                         await page.click(checkbox)
                         await page.click("button[type='submit']")

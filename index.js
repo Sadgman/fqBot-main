@@ -54,12 +54,15 @@ const PosiblesRrn = [
     "cedula .",
     "cedula: ",
     "cédula  ",
-    "cédula. "
+    "cédula. ",
+    "Cédula/RNC:",
+    "Cédula/RNC: "
 ]
 
 
 
 client.on('message_create', async (message) => {
+    console.log((await message.getChat()).id)
     if(message?.body == '' || !message?.body){
         return;
     }
@@ -69,8 +72,6 @@ client.on('message_create', async (message) => {
     const msg = message.body.toLocaleLowerCase()
     const eselbot =  contact.id.user !== numbot
     const hasKeyword = PosiblesRrn.some(keyword => msg.includes(keyword));
-
-    console.log(hasKeyword)
 
     if(hasKeyword && eselbot ){
         const { default: rncvalidator } = await import('./rncvalidate.mjs');
@@ -107,20 +108,17 @@ client.on('message_create', async (message) => {
             message.reply(`Tipo de documento rnc`)   
         }else if(rnc?.length === 11){
             message.reply('Tipo de documento Cédula')
-        }else{
-            message.reply('Revise ese RNC o Cédula')
-            return
         }
 
         message.reply('validando...')
 
         let data = await rncvalidator(rnc)
-        
-        message.reply(data?.rnc? `rnc ${data?.rnc}\nnombre o razon social: ${data?.namereason}\nnombre comercial ${data?.comercialname}\ncategoria ${data?.category}\nRegimen de pagos ${data?.payscheme}\nestado ${data?.status}\nActividad Comercial ${data?.economicactivity}\nadministracion local ${data?.admlocal}\nFacturador Electrónico ${data?.facElec}\nLicencias de Comercialización de VHM ${data?.VHM}` : "no se encuentra inscrito como contribuyente ")
-      
+
+        console.log(data?.status)
         if(data?.status === "SUSPENDIDO"){
             message.reply("El cliente se encuentra suspendido, no podremos registrarlo.")
         }
+        message.reply(data?.rnc? `rnc ${data?.rnc}\nnombre o razon social: ${data?.namereason}\nnombre comercial ${data?.comercialname}\ncategoria ${data?.category}\nRegimen de pagos ${data?.payscheme}\nestado ${data?.status}\nActividad Comercial ${data?.economicactivity}\nadministracion local ${data?.admlocal}\nFacturador Electrónico ${data?.facElec}\nLicencias de Comercialización de VHM ${data?.VHM}` : "no se encuentra inscrito como contribuyente ")
     }
     if(message.body.toLocaleLowerCase() == 'ping'){
         message.reply('pong')
