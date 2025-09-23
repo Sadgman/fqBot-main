@@ -71,7 +71,7 @@ client.on('message_create', async (message) => {
     const numbot = client.info.wid.user
     const msg = message.body.toLocaleLowerCase()
     const eselbot =  contact.id.user !== numbot
-    const hasKeyword = PosiblesRrn.some(keyword => msg.includes(keyword));
+    const hasKeyword = PosiblesRrn.some(keyword => msg?.includes(keyword?.toLocaleLowerCase()));
 
     if(hasKeyword && eselbot ){
         const { default: rncvalidator } = await import('./rncvalidate.mjs');
