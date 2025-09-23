@@ -102,12 +102,8 @@ client.on('message_create', async (message) => {
             }
         }
         rnc = rnc?.replace(/[^0-9]/g, '');
-        
-        if(rnc?.length === 9){
-            message.reply(`Tipo de documento rnc`)   
-        }else if(rnc?.length === 11){
-            message.reply('Tipo de documento Cédula')
-        }else if(rnc?.length < 9 || rnc?.length > 11){
+    
+        if(rnc?.length < 9 || rnc?.length > 11){
             message.reply('Por favor verificar ese número de rnc o cédula')
             return;
         }
@@ -117,6 +113,11 @@ client.on('message_create', async (message) => {
         if(data?.status === "SUSPENDIDO"){
             message.reply("El cliente se encuentra suspendido, no podremos registrarlo.")
             return;
+        }
+        if(rnc?.length === 9){
+            message.reply(`Tipo de documento rnc`)   
+        }else if(rnc?.length === 11){
+            message.reply('Tipo de documento Cédula')
         }
         if(!(data?.rnc)){
             message.reply("No se encuentra inscrito como contribuyente, Favor de verificar el RNC o Cédula")
