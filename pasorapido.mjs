@@ -9,7 +9,6 @@ const browser = await puppeteer.launch({
 const page = await browser.newPage()
 
 export async function prapido() {
-    console.log('Comprobando paso rapido...')
     page.on('framenavigated', async (pestana) => {
         try {
             if(pestana == page.mainFrame()){
@@ -19,13 +18,11 @@ export async function prapido() {
                         const contra = "input[name='password']"
                         const checkbox = "input[type='checkbox']" 
                         const isexist = async (n) => {
-                            console.log("comprobando")
                             const element = await page.$(n);
                             const value = await page?.evaluate(el => el?.value, element);
                             return await value
                         }
                         // rollos vacios de flex c3332 84
-                        console.log(await isexist(nombre))
                         await page.waitForSelector(nombre)
                         await page.evaluate()
                         await isexist(nombre) != '' ? await page.type(nombre, process.env.nombre) : null
