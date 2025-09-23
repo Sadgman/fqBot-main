@@ -1,4 +1,5 @@
 import puppeteer from 'puppeteer';
+import cdv from './cedulavalidate.js'
 
 const  browser = await puppeteer.launch({
     headless: false
@@ -32,20 +33,23 @@ export default async function consultarnc(text){
                     info.push(await selector(`table tr:nth-of-type(${i}) td:nth-of-type(2)`))
                 }
             }
-            return {
-                mWarning: m,
-                rnc: info[0],
-                namereason: info[1],
-                comercialname: info[2],
-                category: info[3],
-                payscheme: info[4],
-                status: info[5],
-                economicactivity: info[6],
-                admlocal: info[7],
-                facElec: info[8],
-                VHM: info[9],
-                cedulaornc: rncocedula?.length === 9 ? "es un rnc" : "es una cedula"
-        
+            if(info[0]){
+                return {
+                    mWarning: m,
+                    rnc: info[0],
+                    namereason: info[1],
+                    comercialname: info[2],
+                    category: info[3],
+                    payscheme: info[4],
+                    status: info[5],
+                    economicactivity: info[6],
+                    admlocal: info[7],
+                    facElec: info[8],
+                    VHM: info[9],
+                    cedulaornc: rncocedula?.length === 9 ? "es un rnc" : "es una cedula"
+                }
+            }else{
+                return cdv(rncocedula)
             }
         }else{    
             // await page.waitForSelector('#cphMain_btnBuscarPorRNC'); 

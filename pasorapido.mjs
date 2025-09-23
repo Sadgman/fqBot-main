@@ -1,6 +1,7 @@
 import puppeteer from 'puppeteer'
 import dotenv from 'dotenv'
 dotenv.config()
+
 const browser = await puppeteer.launch({
     headless: false,
     userDataDir: './data'

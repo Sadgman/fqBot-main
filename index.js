@@ -12,7 +12,7 @@ const client = new Client({
             '--no-sandbox', 
             '--disable-setuid-sandbox', 
             '--disable-dev-shm-usage',   
-        ],
+        ]
     },
 });
 async function comp(){
@@ -118,7 +118,11 @@ client.on('message_create', async (message) => {
         if(data?.status === "SUSPENDIDO"){
             message.reply("El cliente se encuentra suspendido, no podremos registrarlo.")
         }
-        message.reply(data?.rnc? `rnc ${data?.rnc}\nnombre o razon social: ${data?.namereason}\nnombre comercial ${data?.comercialname}\ncategoria ${data?.category}\nRegimen de pagos ${data?.payscheme}\nestado ${data?.status}\nActividad Comercial ${data?.economicactivity}\nadministracion local ${data?.admlocal}\nFacturador Electrónico ${data?.facElec}\nLicencias de Comercialización de VHM ${data?.VHM}` : "no se encuentra inscrito como contribuyente ")
+        if(data?.payscheme){
+            message.reply(data?.rnc? `rnc ${data?.rnc}\nnombre o razon social: ${data?.namereason}\nnombre comercial ${data?.comercialname}\ncategoria ${data?.category}\nRegimen de pagos ${data?.payscheme}\nestado ${data?.status}\nActividad Comercial ${data?.economicactivity}\nadministracion local ${data?.admlocal}\nFacturador Electrónico ${data?.facElec}\nLicencias de Comercialización de VHM ${data?.VHM}` : "No se encuentra inscrito como contribuyente")
+        }else{
+            message.reply(data?.rnc? `Nombre ${data?.namereason}\nRNC o Cédula ${data?.rnc}\nEstado ${data?.status}\nTipo ${data?.comercialname}\nMarca ${data?.category}` : 'No se encuentra inscrito como contribuyente')
+        }
     }
     if(message.body.toLocaleLowerCase() == 'ping'){
         message.reply('pong')
