@@ -108,9 +108,10 @@ client.on('message_create', async (message) => {
             message.reply(`Tipo de documento rnc`)   
         }else if(rnc?.length === 11){
             message.reply('Tipo de documento Cédula')
+        }else if(rnc?.length < 9 || rnc?.length > 11){
+            message.reply('Por favor verificar ese número de rnc o cédula')
+            return;
         }
-
-        message.reply('validando...')
 
         let data = await rncvalidator(rnc)
 
