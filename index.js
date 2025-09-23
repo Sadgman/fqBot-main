@@ -101,7 +101,7 @@ client.on('message_create', async (message) => {
                 }
             }
         }
-        client.sendMessage('1809872404@c.us', `Hay un nuevo cliente para crear favor de verificar`)
+        client.sendMessage('18098972404@c.us', `Hay un nuevo cliente para crear favor de verificar`)
         //client.sendMessage('18092711144@c.us', `Hay un nuevo cliente para crear favor de verificar`)
         rnc = rnc?.replace(/[^0-9]/g, '');
     
