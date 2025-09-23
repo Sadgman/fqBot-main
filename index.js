@@ -66,8 +66,8 @@ client.on('message_create', async (message) => {
     if(message?.body == '' || !message?.body){
         return;
     }
-    console.log('Mensaje recibido:', message.body);
     const contact = await message.getContact();
+    console.log(`Mensaje de ${contact?.name} Mensaje ${message?.body}`);
     const numbot = client.info.wid.user
     const msg = message.body.toLocaleLowerCase()
     const eselbot =  contact.id.user !== numbot
@@ -102,7 +102,6 @@ client.on('message_create', async (message) => {
             }
         }
         rnc = rnc?.replace(/[^0-9]/g, '');
-        console.log('RNC o Cedula extraído:', rnc);
         
         if(rnc?.length === 9){
             message.reply(`Tipo de documento rnc`)   
@@ -115,14 +114,18 @@ client.on('message_create', async (message) => {
 
         let data = await rncvalidator(rnc)
 
-        console.log(data?.status)
         if(data?.status === "SUSPENDIDO"){
             message.reply("El cliente se encuentra suspendido, no podremos registrarlo.")
+            return;
+        }
+        if(!(data?.rnc)){
+            message.reply("No se encuentra inscrito como contribuyente, Favor de verificar el RNC o Cédula")
+            return;
         }
         if(data?.payscheme){
-            message.reply(data?.rnc? `rnc ${data?.rnc}\nnombre o razon social: ${data?.namereason}\nnombre comercial ${data?.comercialname}\ncategoria ${data?.category}\nRegimen de pagos ${data?.payscheme}\nestado ${data?.status}\nActividad Comercial ${data?.economicactivity}\nadministracion local ${data?.admlocal}\nFacturador Electrónico ${data?.facElec}\nLicencias de Comercialización de VHM ${data?.VHM}` : "No se encuentra inscrito como contribuyente")
+            message.reply(`RNC ${data?.rnc}\nnombre o razon social: ${data?.namereason}\nnombre comercial ${data?.comercialname}\ncategoria ${data?.category}\nRegimen de pagos ${data?.payscheme}\nestado ${data?.status}\nActividad Comercial ${data?.economicactivity}\nadministracion local ${data?.admlocal}\nFacturador Electrónico ${data?.facElec}\nLicencias de Comercialización de VHM ${data?.VHM}`)
         }else{
-            message.reply(data?.rnc? `Nombre ${data?.namereason}\nRNC o Cédula ${data?.rnc}\nEstado ${data?.status}\nTipo ${data?.comercialname}\nMarca ${data?.category}` : 'No se encuentra inscrito como contribuyente')
+            message.reply(`Nombre ${data?.namereason}\nRNC o Cédula ${data?.rnc}\nEstado ${data?.status}\nTipo ${data?.comercialname}\nMarca ${data?.category}`)
         }
     }
     if(message.body.toLocaleLowerCase() == 'ping'){
