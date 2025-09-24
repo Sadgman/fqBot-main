@@ -1,6 +1,7 @@
 const { Client, LocalAuth, MessageMedia, RemoteAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const prapido = import ('./pasorapido.mjs')
+const Fcc = require('./utils/ia/FormatClientConvert.js')
 const fs = require('fs');
 
 const client = new Client({
@@ -68,9 +69,11 @@ client.on('message_create', async (message) => {
     }
     const contact = await message.getContact();
     console.log(`Mensaje de ${contact?.name} Mensaje ${message?.body}`);
+    const quotedMsg = message.hasQuotedMsg ? await message.getQuotedMessage() : null;
     const numbot = client.info.wid.user
     const msg = message.body.toLocaleLowerCase()
-    const eselbot =  contact.id.user !== numbot
+    let eselbot =  contact.id.user !== numbot
+    if (message.body.toLocaleLowerCase().includes('byalastor')) eselbot = true;
     const hasKeyword = PosiblesRrn.some(keyword => msg?.includes(keyword?.toLocaleLowerCase()));
 
     if(hasKeyword && eselbot ){
@@ -131,6 +134,11 @@ client.on('message_create', async (message) => {
             message.reply(`Nombre ${data?.namereason}\nRNC o Cédula ${data?.rnc}\nEstado ${data?.status}\nTipo ${data?.comercialname}\nMarca ${data?.category}`)
         }
 
+    }
+    if(message.body.toLocaleLowerCase() == '.s' && message.hasQuotedMsg){
+        const msgq = quotedMsg.body.toLocaleLowerCase();
+        const iaresp = await Fcc.default(msgq);
+        if(iaresp) message.reply(iaresp);
     }
     if(message.body.toLocaleLowerCase() == 'ping'){
         message.reply('pong')
