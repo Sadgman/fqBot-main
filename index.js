@@ -135,7 +135,8 @@ client.on('message_create', async (message) => {
         }
 
     }
-    if(message.body.toLocaleLowerCase() == '.s' && message.hasQuotedMsg){
+    //Para darle formato al cliente
+    if(message.body.toLocaleLowerCase() == '.f' && message.hasQuotedMsg){
         const msgq = quotedMsg.body.toLocaleLowerCase();
         const iaresp = await Fcc.default(msgq);
         if(iaresp) message.reply(iaresp);
