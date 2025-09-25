@@ -69,12 +69,12 @@ client.on('message_create', async (message) => {
     if(message?.body == '' || !message?.body){
         return;
     }
-    const contact = await message.getContact();
+    const contact = await message?.getContact();
     console.log(`Mensaje de ${contact?.name} Mensaje ${message?.body}`);
-    const quotedMsg = message.hasQuotedMsg ? await message.getQuotedMessage() : null;
-    const numbot = client.info.wid.user
+    const quotedMsg = message?.hasQuotedMsg ? await message?.getQuotedMessage() : null;
+    const numbot = client?.info?.wid.user
     const msg = qa(message.body.toLocaleLowerCase())
-    let eselbot =  contact.id.user !== numbot
+    let eselbot =  contact?.id?.user !== numbot
     if (msg.includes('byalastor')) eselbot = true;
     const hasKeyword = PosiblesRrn?.some(keyword => msg?.includes(keyword?.toLocaleLowerCase()));
     async function idStract(msgg){
