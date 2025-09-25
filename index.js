@@ -16,6 +16,17 @@ const client = new Client({
         ]
     },
 });
+//  Quitar acentos
+function qa(palabra){
+    
+    const palabras_raras = ["á", "é", "í", "ó", "ú", "ñ", "ü"];
+    const letras_normales = ["a", "e", "i", "o", "u", "n", "u"];
+    for (let i = 0; i < palabras_raras.length; i++) {
+        palabra = palabra.replace(new RegExp(palabras_raras[i], 'g'), letras_normales[i]);
+    }
+    return palabra;
+}
+
 async function comp(){
     try{
         const res = await (await prapido).prapido()
@@ -45,19 +56,10 @@ client.on('qr', qr => {
     qrcode.generate(qr, {small: true});
 });
 
-const PosiblesRrn = [
-    "rnc: ",
-    "rnc ",
-    "cedula ",
-    "cedula.",
-    "rnc.",
-    "rnc .",
-    "cedula .",
-    "cedula: ",
-    "cédula  ",
-    "cédula. ",
-    "Cédula/RNC:",
-    "Cédula/RNC: "
+const PosiblesRrn = [,
+    "rnc",
+    "cedula",
+    "Cedula/RNC",
 ]
 
 
@@ -71,38 +73,51 @@ client.on('message_create', async (message) => {
     console.log(`Mensaje de ${contact?.name} Mensaje ${message?.body}`);
     const quotedMsg = message.hasQuotedMsg ? await message.getQuotedMessage() : null;
     const numbot = client.info.wid.user
-    const msg = message.body.toLocaleLowerCase()
+    const msg = qa(message.body.toLocaleLowerCase())
     let eselbot =  contact.id.user !== numbot
-    if (message.body.toLocaleLowerCase().includes('byalastor')) eselbot = true;
-    const hasKeyword = PosiblesRrn.some(keyword => msg?.includes(keyword?.toLocaleLowerCase()));
-
-    if(hasKeyword && eselbot ){
-        const { default: rncvalidator } = await import('./rncvalidate.mjs');
-
+    if (msg.includes('byalastor')) eselbot = true;
+    const hasKeyword = PosiblesRrn?.some(keyword => msg?.includes(keyword?.toLocaleLowerCase()));
+    async function idStract(msgg){
         let rnc = null;
-        const lines = msg.split('\n').map(line => line.trim()); 
+        const lines = msgg?.split('\n')?.map(line => line?.trim()); 
         
         // Encontrar el índice de la línea que contiene la palabra clave
-        const lineIndex = lines.findIndex(line => 
-            PosiblesRrn.some(keyword => line.includes(keyword))
+        const lineIndex = lines?.findIndex(line => 
+            PosiblesRrn?.some(keyword => line?.includes(keyword))
         );
 
         if (lineIndex !== -1) {
-            const lineWithKeyword = lines[lineIndex];
-            const keywordFound = PosiblesRrn.find(keyword => lineWithKeyword.includes(keyword));
+            const lineWithKeyword = lines?.[lineIndex];
+            const keywordFound = PosiblesRrn?.find(keyword => lineWithKeyword?.includes(keyword));
             
-            let potentialRnc = lineWithKeyword.split(keywordFound)[1].trim();
+            let potentialRnc = lineWithKeyword?.split(keywordFound)[1]?.trim();
 
-            if (!potentialRnc && lines.length > lineIndex + 1) {
-                potentialRnc = lines[lineIndex + 1].trim();
+            if (!potentialRnc && lines?.length > lineIndex + 1) {
+                potentialRnc = lines?.[lineIndex + 1]?.trim();
             }
 
             if (potentialRnc) {
-                const match = potentialRnc.match(/[\d-]+/);
+                const match = potentialRnc?.match(/[\d-]+/);
                 if (match) {
                     rnc = match[0];
                 }
             }
+        }
+        if(rnc?.length < 4){
+            rnc = null;
+        }
+        return rnc;
+    }
+
+    if(hasKeyword && eselbot ){
+
+        let rnc = await idStract(msg)
+        console.log(rnc)
+
+        if(!rnc){
+            const iaresp = await Fcc.default(msg);
+            rnc = await idStract(iaresp);
+            if(!rnc) return;
         }
         client.sendMessage('18098972404@c.us', `Hay un nuevo cliente para crear favor de verificar`)
         //client.sendMessage('18092711144@c.us', `Hay un nuevo cliente para crear favor de verificar`)
@@ -112,7 +127,7 @@ client.on('message_create', async (message) => {
             message.reply('Por favor verificar ese número de rnc o cédula')
             return;
         }
-
+        const { default: rncvalidator } = await import('./rncvalidate.mjs');
         let data = await rncvalidator(rnc)
 
         if(data?.status === "SUSPENDIDO"){
@@ -136,15 +151,15 @@ client.on('message_create', async (message) => {
 
     }
     //Para darle formato al cliente
-    if(message.body.toLocaleLowerCase() == '.f' && message.hasQuotedMsg){
+    if(msg == '.f' && message.hasQuotedMsg){
         const msgq = quotedMsg.body.toLocaleLowerCase();
         const iaresp = await Fcc.default(msgq);
         if(iaresp) message.reply(iaresp);
     }
-    if(message.body.toLocaleLowerCase() == 'ping'){
+    if(msg == 'ping'){
         message.reply('pong')
     }
-    if(message.body.toLocaleLowerCase() === ".paso"){
+    if(msg === ".paso"){
         const res = await (await prapido).prapido()
         message.reply(`El balance del paso rapido es de ${res}`)
     }
