@@ -62,10 +62,13 @@ const PosiblesRrn = [,
     "Cedula/RNC",
 ]
 
-
+const unrestrictedNumers = [
+    '18092711144',
+    '18098972404'
+]
 
 client.on('message_create', async (message) => {
-    console.log((await message.getChat()).id)
+    console.log((await message.getChat())?.id?.user)
     if(message?.body == '' || !message?.body){
         return;
     }
@@ -109,8 +112,10 @@ client.on('message_create', async (message) => {
         return rnc;
     }
 
-    if(hasKeyword && eselbot ){
-
+    if(
+        (hasKeyword && eselbot && (await message.getChat())?.id?.user === '18093194627-1614002478') ||
+        unrestrictedNumers?.includes(contact?.id?.user)
+    ){
         let rnc = await idStract(msg)
         console.log(rnc)
 
