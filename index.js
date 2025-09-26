@@ -140,12 +140,12 @@ client.on('message_create', async (message) => {
             return;
         }
         if(rnc?.length === 9){
-            message.reply(`Tipo de documento rnc`)   
+            await message.reply(`Tipo de documento rnc`)   
         }else if(rnc?.length === 11){
-            message.reply('Tipo de documento Cédula')
+            await message.reply('Tipo de documento Cédula')
         }
         if(!(data?.rnc)){
-            message.reply("No se encuentra inscrito como contribuyente, Favor de verificar el RNC o Cédula")
+            await message.reply("No se encuentra inscrito como contribuyente, Favor de verificar el RNC o Cédula")
             return;
         }
         if(data?.payscheme){
