@@ -113,8 +113,8 @@ client.on('message_create', async (message) => {
     }
 
     if(
-        (hasKeyword && eselbot && (await message.getChat())?.id?.user === '18093194627-1614002478') ||
-        unrestrictedNumers?.includes(contact?.id?.user)
+        hasKeyword && eselbot && ((await message.getChat())?.id?.user === '18093194627-1614002478' ||
+        unrestrictedNumers?.includes(contact?.id?.user))
     ){
         let rnc = await idStract(msg)
         console.log(rnc)
@@ -164,6 +164,7 @@ client.on('message_create', async (message) => {
     if(msg == 'ping'){
         message.reply('pong')
     }
+    
     if(msg === ".paso"){
         const res = await (await prapido).prapido()
         message.reply(`El balance del paso rapido es de ${res}`)
