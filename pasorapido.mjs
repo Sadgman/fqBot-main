@@ -22,7 +22,6 @@ export async function prapido() {
                             const value = await page?.evaluate(el => el?.value, element);
                             return await value
                         }
-                        // rollos vacios de flex c3332 84
                         await page.waitForSelector(nombre)
                         await page.evaluate()
                         await isexist(nombre) != '' ? await page.type(nombre, process.env.nombre) : null
