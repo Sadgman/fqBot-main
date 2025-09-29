@@ -17,15 +17,15 @@ export async function prapido() {
                         const nombre = "input[name='email']"
                         const contra = "input[name='password']"
                         const checkbox = "input[type='checkbox']" 
-                        const isexist = async (n) => {
-                            const element = await page.$(n);
-                            const value = await page?.evaluate(el => el?.value, element);
-                            return await value
+                        const getValue = async (selector) => {
+                            return await page.evaluate((selector)=>{
+                                return document.querySelector(selector).value
+                            }, selector)
                         }
                         await page.waitForSelector(nombre)
                         await page.evaluate()
-                        await isexist(nombre) != '' ? await page.type(nombre, process.env.nombre) : null
-                        await isexist(contra) != '' ? await page.type(contra, process.env.contra) : null
+                        await getValue(nombre) == '' ? await page.type(nombre, process.env.nombre) : null
+                        await getValue(contra) == '' ? await page.type(contra, process.env.contra) : null
                         await page.waitForSelector(checkbox)
                         await page.click(checkbox)
                         await page.click("button[type='submit']")

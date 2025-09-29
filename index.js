@@ -37,7 +37,7 @@ async function comp(){
             for(let i=0;i<=2; i++){
                 const res = await (await prapido).prapido()
                 console.log(res <= 35000? `Se require recarga  saldo actual ${res}`: false)
-                if( res <= 35000){
+                if( res <= 40000){
                     client.sendMessage('18092711144@c.us', `Se requiere recarga de paso rapido saldo actual de ${res}`)
                 }
             }
