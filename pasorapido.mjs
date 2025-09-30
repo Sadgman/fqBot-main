@@ -23,7 +23,6 @@ export async function prapido() {
                             }, selector)
                         }
                         await page.waitForSelector(nombre)
-                        await page.evaluate()
                         await getValue(nombre) == '' ? await page.type(nombre, process.env.nombre) : null
                         await getValue(contra) == '' ? await page.type(contra, process.env.contra) : null
                         await page.waitForSelector(checkbox)
