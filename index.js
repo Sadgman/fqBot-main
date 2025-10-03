@@ -1,8 +1,9 @@
-const { Client, LocalAuth, MessageMedia, RemoteAuth } = require('whatsapp-web.js');
+const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 const prapido = import ('./pasorapido.mjs')
 const Fcc = require('./utils/ia/FormatClientConvert.js')
 const fs = require('fs');
+const d = require('./bfclient.js')
 
 const client = new Client({
     restartOnAuthFail: true,
@@ -160,6 +161,29 @@ client.on('message_create', async (message) => {
         const msgq = quotedMsg.body.toLocaleLowerCase();
         const iaresp = await Fcc.default(msgq);
         if(iaresp) message.reply(iaresp);
+    }
+    //Crear cliente
+    if(msg.includes('crear')){
+        message.reply('creando cliente...')
+        const m = msg.split('|')
+        if(m[8] == 'r'){
+            m[8] = "RNC"
+        }else if(m[8] == 'c'){
+            m[8] = "CEDULA"
+        }else{
+            m[8] = "OTRO"
+        }
+        d.default({
+            Codcli: m[1],
+            RNC: m[2],
+            RazonSocial: m[3] || "",
+            Direccion1: m[4] || "",
+            Direccion2: m[5] || "",
+            Telefono1: m[6] || "",
+            Telefono2: m[7] || "",
+            TipoID: m[8],
+            btnAgregar: 'NO'
+        });
     }
     if(msg == 'ping'){
         message.reply('pong')
