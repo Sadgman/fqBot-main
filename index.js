@@ -69,12 +69,13 @@ const unrestrictedNumers = [
 ]
 
 client.on('message_create', async (message) => {
-    console.log((await message.getChat())?.id?.user)
     if(message?.body == '' || !message?.body){
         return;
     }
+    const chat = await message.getChat()
+
     const contact = await message?.getContact();
-    console.log(`Mensaje de ${contact?.name} Mensaje ${message?.body}`);
+    console.log(`Mensaje de ${contact?.name} En el chat de ${chat.id.user} Mensaje ${message?.body}`);
     const quotedMsg = message?.hasQuotedMsg ? await message?.getQuotedMessage() : null;
     const numbot = client?.info?.wid.user
     const msg = qa(message.body.toLocaleLowerCase())
@@ -114,7 +115,7 @@ client.on('message_create', async (message) => {
     }
 
     if(
-        hasKeyword && eselbot && ((await message.getChat())?.id?.user === '18093194627-1614002478' ||
+        hasKeyword && eselbot && (chat.id?.user === '18093194627-1614002478' ||
         unrestrictedNumers?.includes(contact?.id?.user))
     ){
         let rnc = await idStract(msg)
