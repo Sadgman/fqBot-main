@@ -167,12 +167,16 @@ client.on('message_create', async (message) => {
     if(msg.includes('crear')){
         message.reply('creando cliente...')
         const m = msg.split('|')
-        if(m[8] == 'r'){
-            m[8] = "RNC"
-        }else if(m[8] == 'c'){
-            m[8] = "CEDULA"
-        }else{
-            m[8] = "OTRO"
+        switch(m[8]){
+            case 'r':
+                m[8] = 'RNC'
+                break;
+            case 'c':
+                m[8] = 'CEDULA'
+                break;
+            default:
+                m[8] = 'OTRO'
+                break;
         }
         d.default({
             Codcli: m[1],
