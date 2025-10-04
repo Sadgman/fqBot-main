@@ -187,8 +187,25 @@ client.on('message_create', async (message) => {
             Telefono1: m[6] || "",
             Telefono2: m[7] || "",
             TipoID: m[8],
+            Pais: m[9] || "REP. DOMINICANA",
+            Propietario: m[10] || "",
+            Sector: m[11] || "",
             btnAgregar: 'NO'
         });
+        // { 
+        //     Codcli: "",
+        //     RNC: "",
+        //     RazonSocial: "",
+        //     Direccion1: "",
+        //     Direccion2: "",
+        //     Telefono1: "",
+        //     Telefono2: "",
+        //     TipoID: "",
+        //     Pais: "",
+        //     Propietario: "",
+        //     Sector: "",
+        //     btnAgregar: 'NO'
+        // }
     }
     if(msg == 'ping'){
         message.reply('pong')
