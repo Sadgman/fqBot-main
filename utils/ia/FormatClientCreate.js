@@ -19,11 +19,12 @@ Reglas importantes:
 10. Los nombres como calle, avenida etc deben ir abreviados.
 11. si hay algun dato que no va en la plantilla no lo incluyas como palabras, etc.
 12. Si no se te envia algun dato no debes inventarlo.
-
+13. tipoid se debe llenar con c si es una cedula, con r si es un rnc y con d si es otro tipo de identificacion.
 --- PLANTILLA de entrada ---
 {
 "razonsocial": 
 "rnc": 
+"tipoid":
 "direccion": 
 "nombrepropietario": 
 "telefono": 
@@ -46,6 +47,6 @@ export default async function main(texto) {
   });
   let rp = (response.text)?.replaceAll('```json','')?.replaceAll('```','');
   rp = JSON.parse(rp);
-  return `${rp?.rnc}|${rp?.razonsocial}|${rp?.direccion}|${rp?.direccion2? rp?.direccion2 : ''}|${rp?.telefono}|${rp?.telefono2}|c|${rp?.pais}|${rp?.nombrepropietario}|${rp?.sector}`
+  return `${rp?.rnc}|${rp?.razonsocial}|${rp?.direccion}|${rp?.direccion2? rp?.direccion2 : ''}|${rp?.telefono}|${rp?.telefono2}|${rp?.tipoid}|${rp?.pais}|${rp?.nombrepropietario}|${rp?.sector}`
 }
 

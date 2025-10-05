@@ -200,6 +200,7 @@ client.on('message_create', async (message) => {
             Sector: formato[9] || "",
             btnAgregar: 'NO'
         });
+        message.reply(`El cliente será creado con el código ${codcli}`)
     }
     if(msg == 'ping'){
         message.reply('pong')
