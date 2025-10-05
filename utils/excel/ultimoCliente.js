@@ -10,13 +10,10 @@ export default function ultimoCliente() {
     return new Promise((resolve, reject) => {
         const vbsPath = path.resolve(__dirname, 'ax.vbs');
         const excelPath = path.resolve(__dirname, 'ulticlient.xlsb');
-        console.log(excelPath)
-        console
-
+        
         const cmd = `cscript //NoLogo "${vbsPath}"`;
         exec(cmd, async (error, stdout, stderr) => {
             if (error) {
-                console.error('ERROR al ejecutar VBScript:', stderr || error.message);
                 return reject(new Error(stderr || error.message));
             }
 
@@ -48,7 +45,6 @@ export default function ultimoCliente() {
                 return resolve(resultado);
                             
             } catch (readError) {
-                console.error('ERROR al leer el archivo Excel:', readError.message);
                 return reject(new Error(`ERROR al leer el archivo Excel: ${readError.message}`));
             }
         });

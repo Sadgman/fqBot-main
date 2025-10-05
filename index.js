@@ -3,7 +3,11 @@ const qrcode = require('qrcode-terminal');
 const prapido = import ('./pasorapido.mjs')
 const Fcc = require('./utils/ia/FormatClientConvert.js')
 const fs = require('fs');
-const d = require('./bfclient.js')
+const bf = require('./bfclient.js');
+const { default: ultimoCliente } = require('./utils/excel/ultimoCliente.js');
+const FCclient = require('./utils/ia/FormatClientCreate.js')
+const dotenv = require('dotenv');
+dotenv.config();
 
 const client = new Client({
     restartOnAuthFail: true,
@@ -50,7 +54,7 @@ async function comp(){
 
 client.on('ready', async () => {
     console.log('Client is ready!');
-    await comp();
+    // await comp();
 });
 
 client.on('qr', qr => {
@@ -77,8 +81,9 @@ client.on('message_create', async (message) => {
     const contact = await message?.getContact();
     console.log(`Mensaje de ${contact?.name} En el chat de ${chat.id.user} Mensaje ${message?.body}`);
     const quotedMsg = message?.hasQuotedMsg ? await message?.getQuotedMessage() : null;
+    const msgq = quotedMsg?.body?.toLocaleLowerCase();
     const numbot = client?.info?.wid.user
-    const msg = qa(message.body.toLocaleLowerCase())
+    let msg = qa(message.body.toLocaleLowerCase())
     let eselbot =  contact?.id?.user !== numbot
     if (msg.includes('byalastor')) eselbot = true;
     const hasKeyword = PosiblesRrn?.some(keyword => msg?.includes(keyword?.toLocaleLowerCase()));
@@ -119,7 +124,6 @@ client.on('message_create', async (message) => {
         unrestrictedNumers?.includes(contact?.id?.user))
     ){
         let rnc = await idStract(msg)
-        console.log(rnc)
 
         if(!rnc){
             const iaresp = await Fcc.default(msg);
@@ -157,60 +161,63 @@ client.on('message_create', async (message) => {
         }
 
     }
-    //Para darle formato al cliente
-    if(msg == '.f' && message.hasQuotedMsg){
-        const msgq = quotedMsg.body.toLocaleLowerCase();
-        const iaresp = await Fcc.default(msgq);
-        if(iaresp) message.reply(iaresp);
-    }
     //Crear cliente
-    if(msg.includes('crear')){
+    if(msg === '.c' && message.hasQuotedMsg){
         message.reply('creando cliente...')
-        const m = msg.split('|')
-        switch(m[8]){
+        let msdg = await FCclient.default(await qa(msgq))
+        msdg = await qa(msdg);
+
+        const formato = msdg.split('|')
+        switch(formato[6]){
             case 'r':
-                m[8] = 'RNC'
+                formato[6] = 'RNC'
                 break;
             case 'c':
-                m[8] = 'CEDULA'
+                formato[6] = 'CEDULA'
                 break;
             default:
-                m[8] = 'OTRO'
+                formato[6] = 'OTRO'
                 break;
         }
-        d.default({
-            Codcli: m[1],
-            RNC: m[2],
-            RazonSocial: m[3] || "",
-            Direccion1: m[4] || "",
-            Direccion2: m[5] || "",
-            Telefono1: m[6] || "",
-            Telefono2: m[7] || "",
-            TipoID: m[8],
-            Pais: m[9] || "REP. DOMINICANA",
-            Propietario: m[10] || "",
-            Sector: m[11] || "",
+        // formato para crear cliente
+        // crear|codcli|rnc|razonsocial|direccion1|direccion2|telefono1|telefono2|tipoid(rnc,cedula,otro)|pais|propietario|sector
+        const rs = formato[1].trim().toLocaleUpperCase();
+        const ult = await ultimoCliente()
+        const codcli = await ult.find(cod => {return cod.toString()[0] == rs[0]});
+        bf.default({
+            Codcli: codcli,
+            RNC: formato[0],
+            RazonSocial: formato[1] || "",
+            Direccion1: formato[2] || "",
+            Direccion2: formato[3] || "",
+            Telefono1: formato[4] || "",
+            Telefono2: formato[5] || "",
+            TipoID: formato[6],
+            Pais: formato[7] || "REP. DOMINICANA",
+            Propietario: formato[8] || "",
+            txtdiascredito: '30',
+            limitecredito: '500',
+            Sector: formato[9] || "",
             btnAgregar: 'NO'
         });
-        // { 
-        //     Codcli: "",
-        //     RNC: "",
-        //     RazonSocial: "",
-        //     Direccion1: "",
-        //     Direccion2: "",
-        //     Telefono1: "",
-        //     Telefono2: "",
-        //     TipoID: "",
-        //     Pais: "",
-        //     Propietario: "",
-        //     Sector: "",
-        //     btnAgregar: 'NO'
-        // }
     }
     if(msg == 'ping'){
         message.reply('pong')
     }
-    
+    if(msg.includes(".u")){
+        if(msg.length > 2){
+            const rs = msg.replace('.u', '').trim().toLocaleUpperCase();
+            ultimoCliente().then(res => {
+                res.forEach(element => {
+                    if(element.toString()[0] == rs[0]){
+                        message.reply(`${element}`);
+                        return;
+                    }
+                    
+                });
+            })
+        }
+    }
     if(msg === ".paso"){
         const res = await (await prapido).prapido()
         message.reply(`El balance del paso rapido es de ${res}`)
