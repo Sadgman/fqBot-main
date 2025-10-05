@@ -1,16 +1,27 @@
 import { exec } from 'child_process';
 import xls from 'xlsx';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export default function ultimoCliente() {
     return new Promise((resolve, reject) => {
-        exec(`cscript //NoLogo ax.vbs`, async(error, stdout, stderr) => {
+        const vbsPath = path.resolve(__dirname, 'ax.vbs');
+        const excelPath = path.resolve(__dirname, 'ulticlient.xlsb');
+        console.log(excelPath)
+        console
+
+        const cmd = `cscript //NoLogo "${vbsPath}"`;
+        exec(cmd, async (error, stdout, stderr) => {
             if (error) {
-                console.error(`ERROR al ejecutar VBScript: ${stderr}`);
-                return reject(stderr);
+                console.error('ERROR al ejecutar VBScript:', stderr || error.message);
+                return reject(new Error(stderr || error.message));
             }
 
             try {
-                const workbook = xls.readFile('ulticlient.xlsb');
+                const workbook = xls.readFile(excelPath);
 
                 const hclient = workbook.SheetNames[1];
                 const worksheet = workbook.Sheets[hclient];
@@ -18,12 +29,13 @@ export default function ultimoCliente() {
                 const ulcli = xls.utils.sheet_to_json(worksheet, { raw: true }); 
                 const menoresPorLetra = {};
                 
-                ulcli.forEach((client, index) => {
-                    if(client.codclte.trim().length == 6 && client.codclte.trim().includes('-')){
-                        const codigo = client.codclte.trim();
+                ulcli.forEach((client) => {
+                    if (!client || !client.codclte) return;
+                    const cod = String(client.codclte).trim();
+                    if(cod.length == 6 && cod.includes('-')){
+                        const codigo = cod;
                         const letra = codigo.split('-')[0];
                         const numero = parseInt(codigo.replace(/\D/g, ""));
-                        
                         if(!menoresPorLetra[letra] || numero < menoresPorLetra[letra].numero) {
                             menoresPorLetra[letra] = {
                                 codigo: codigo,
@@ -33,10 +45,11 @@ export default function ultimoCliente() {
                     }
                 });            
                 const resultado = Object.values(menoresPorLetra).map(item => item.codigo);
-                resolve(resultado);
+                return resolve(resultado);
                             
             } catch (readError) {
-                throw new Error(`ERROR al leer el archivo Excel: ${readError.message}`);
+                console.error('ERROR al leer el archivo Excel:', readError.message);
+                return reject(new Error(`ERROR al leer el archivo Excel: ${readError.message}`));
             }
         });
     });
