@@ -35,13 +35,16 @@ export default function ultimoCliente() {
                         const numero = parseInt(codigo.replace(/\D/g, ""));
                         if(!menoresPorLetra[letra] || numero < menoresPorLetra[letra].numero) {
                             menoresPorLetra[letra] = {
-                                codigo: codigo,
-                                numero: numero
+                                letra: letra,
+                                numero:  numero
                             };
                         }
                     }
                 });            
-                const resultado = Object.values(menoresPorLetra).map(item => item.codigo);
+                const resultado = Object.values(menoresPorLetra).map(item => {
+                    const num = String(item.numero + 1).padStart(4, '0');
+                    return `${item.letra}-${num}`;
+                });
                 return resolve(resultado);
                             
             } catch (readError) {
