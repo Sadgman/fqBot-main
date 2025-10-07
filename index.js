@@ -54,7 +54,7 @@ async function comp(){
 
 client.on('ready', async () => {
     console.log('Client is ready!');
-    // await comp();
+    await comp();
 });
 
 client.on('qr', qr => {
@@ -162,7 +162,7 @@ client.on('message_create', async (message) => {
 
     }
     //Crear cliente
-    if(msg === '.c' && message.hasQuotedMsg){
+    if(msg === '.c' && message.hasQuotedMsg && unrestrictedNumers.includes(contact.id.user)){
         message.reply('creando cliente...')
         let msdg = await FCclient.default(await qa(msgq))
         msdg = await qa(msdg);
@@ -195,9 +195,12 @@ client.on('message_create', async (message) => {
             TipoID: formato[6],
             Pais: formato[7] || "REP. DOMINICANA",
             Propietario: formato[8] || "",
-            txtdiascredito: '30',
+            diascredito: '30',
+            tiporelacion: 'Solo Cliente',
             limitecredito: '500',
             Sector: formato[9] || "",
+            clasificacion: "CLIENTES EN GENERAL",
+            moneda: "PESOS DOMINICANOS",
             btnAgregar: 'NO'
         });
         message.reply(`El cliente será creado con el código ${codcli}`)
