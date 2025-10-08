@@ -33,7 +33,7 @@ export default function ultimoCliente() {
                         const codigo = cod;
                         const letra = codigo.split('-')[0];
                         const numero = parseInt(codigo.replace(/\D/g, ""));
-                        if(!menoresPorLetra[letra] || numero < menoresPorLetra[letra].numero) {
+                        if(!menoresPorLetra[letra] || numero > menoresPorLetra[letra].numero) {
                             menoresPorLetra[letra] = {
                                 letra: letra,
                                 numero:  numero

@@ -192,7 +192,7 @@ client.on('message_create', async (message) => {
             Direccion2: formato[3] || "",
             Telefono1: formato[4] || "",
             Telefono2: formato[5] || "",
-            TipoID: formato[6],
+            TipoID: formato[0].length === 9 ? "RNC" : formato[0].length === 11 ? "CEDULA" : "OTRO",
             Pais: formato[7] || "REP. DOMINICANA",
             Propietario: formato[8] || "",
             diascredito: '30',
