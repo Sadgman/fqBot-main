@@ -35,13 +35,11 @@ function iniciarProceso() {
   });
 
   procesoCsharp.on('close', (code) => {
-    console.log(`Proceso C# cerrado con código: ${code}`);
     isReady = false;
     procesoCsharp = null;
     
     // Reiniciar el proceso si se cierra inesperadamente
     if (messageQueue.length > 0) {
-      console.log('Reiniciando proceso C# debido a cierre inesperado...');
       setTimeout(iniciarProceso, 1000);
     }
   });
