@@ -224,6 +224,28 @@ client.on('message_create', async (message) => {
             })
         }
     }
+    // Funcion para mencionar a todos los integrantes del grupo
+    async function mentionAll(text){
+        //compruebo si el chat es un grupo, si el usuario es admin o si mi numero es el que hace la llamada.
+        if((chat.isGroup && participantes(contact.id.user)) || Alastor_Number.includes(contact.id.user)){
+
+            let mention = [];
+            //busco dentro del array para introducir el id de todos los usuarios serializados dentro de otro array
+            await chat.participants.forEach(participant => {
+                mention.push(`${participant.id._serialized}`);
+            });
+        
+            await chat.sendMessage(text, { mentions: mention });
+        }
+    }
+    if(message.body.toLocaleLowerCase() === '!t' || message.body.toLocaleLowerCase().startsWith('!t')){
+    const parts = message.body.split(' ');
+    //verifico si parts tiene una longitud mayor a uno y si no incluye la palabra !t
+    if(parts.length > 1 && !parts.slice(1).join(' ').toLocaleLowerCase().includes('!t')){
+        //si es asi mando el texto a la funcion para que lo envie
+        mentionAll(parts.slice(1).join(' '));
+    }
+    }
     if(msg === ".paso"){
         const res = await (await prapido).prapido()
         message.reply(`El balance del paso rapido es de ${res}`)
