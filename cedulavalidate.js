@@ -28,15 +28,23 @@ export default async function validatePerson(text) {
                     info.push(await selector(`table tr:nth-of-type(${i}) td:nth-of-type(2)`))
                 }
             }
-            return {
-
-                rnc: info[3],
-                namereason: info[0],
-                comercialname: info[2],
-                category: info[4],
-                status: info[1],
-                cedulaornc: rncocedula?.length === 9 ? "es un rnc" : "es una cedula"
-        
+            if(info[3]){
+                return {
+                    rnc: info[3],
+                    namereason: info[0],
+                    comercialname: info[2],
+                    category: info[4],
+                    status: info[1],
+                    cedulaornc: rncocedula?.length === 9 ? "es un rnc" : "es una cedula"
+            
+                }
+            }else{
+                const msg = await page.evaluate(async () =>{
+                    return document.querySelector("#cphMain_lblInformacion")?.textContent === 'El RNC/Cédula consultado no se encuentra inscrito como Contribuyente.'
+                }) 
+                if(!msg){
+                    await validatePerson(text)
+                }
             }
     }catch(err){
         console.log(err)

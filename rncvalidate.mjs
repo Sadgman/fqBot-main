@@ -33,6 +33,7 @@ export default async function consultarnc(text){
                     info.push(await selector(`table tr:nth-of-type(${i}) td:nth-of-type(2)`))
                 }
             }
+
             if(info[0]){
                 return {
                     mWarning: m,
@@ -49,7 +50,14 @@ export default async function consultarnc(text){
                     cedulaornc: rncocedula?.length === 9 ? "es un rnc" : "es una cedula"
                 }
             }else{
-                return cdv(rncocedula)
+                const msg = await page.evaluate(async () =>{
+                    return document.querySelector("#cphMain_lblInformacion")?.textContent === 'El RNC/Cédula consultado no se encuentra inscrito como Contribuyente.'
+                })
+                if(msg){
+                    return cdv(rncocedula)
+                }else{
+                    await consultarnc(text)
+                }
             }
         }else{    
             // await page.waitForSelector('#cphMain_btnBuscarPorRNC'); 
