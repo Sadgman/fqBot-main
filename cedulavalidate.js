@@ -40,7 +40,7 @@ export default async function validatePerson(text) {
                 }
             }else{
                 const msg = await page.evaluate(async () =>{
-                    return document.querySelector("#cphMain_lblInformacion")?.textContent === 'El RNC/Cédula consultado no se encuentra inscrito como Contribuyente.'
+                    return document.querySelector("#cphMain_divAlertDanger")?.textContent === 'El RNC/Cédula consultado no se encuentra inscrito como Registrado.'
                 }) 
                 if(!msg){
                     await validatePerson(text)
