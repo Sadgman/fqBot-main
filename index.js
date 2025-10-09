@@ -121,7 +121,7 @@ client.on('message_create', async (message) => {
 
     if(
         hasKeyword && eselbot && (chat.id?.user === '18093194627-1614002478' ||
-        unrestrictedNumers?.includes(contact?.id?.user))
+        unrestrictedNumers?.includes(contact?.id?.user) || chat.id.user === '120363202084167394')
     ){
         let rnc = await idStract(msg)
 
@@ -184,6 +184,7 @@ client.on('message_create', async (message) => {
         const rs = formato[1].trim().toLocaleUpperCase();
         const ult = await ultimoCliente()
         const codcli = await ult.find(cod => {return cod.toString()[0] == rs[0]});
+        let vendedor = JSON.parse(fs.readFileSync('vendedores.json'))
         bf.default({
             Codcli: codcli,
             RNC: formato[0],
@@ -203,7 +204,7 @@ client.on('message_create', async (message) => {
             moneda: "PESOS DOMINICANOS",
             tipocliente: "Corporativo",
             regimpositivo: "CREDITO FISCAL",
-            vendedor: "",
+            vendedor: vendedor?.[contact.id.user]?.zona ? vendedor?.[contact.id.user]?.zona : '',
             zona: "",
             btnAgregar: 'NO'
         });

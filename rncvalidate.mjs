@@ -2,13 +2,15 @@ import puppeteer from 'puppeteer';
 import cdv from './cedulavalidate.js'
 
 const  browser = await puppeteer.launch({
-    headless: false
+    headless: true
 })
 const page = await browser.newPage();
+await page.setUserAgent('Mozilla/5.0 (iPhone; CPU iPhone OS 9_0_1 like Mac OS X) AppleWebKit/601.1.46 (KHTML, like Gecko) Version/9.0 Mobile/13A404 Safari/601.1')
+
 export default async function consultarnc(text){
     try{
         let info = []
-        page.goto("https://dgii.gov.do/app/WebApps/ConsultasWeb2/ConsultasWeb/consultas/rnc.aspx")
+        await page.goto("https://dgii.gov.do/app/WebApps/ConsultasWeb2/ConsultasWeb/consultas/rnc.aspx")
         await page.waitForSelector('#cphMain_txtRNCCedula');
         const rncocedula = text?.replace(/[^0-9]/g, '');
         const VisibleAndActive = async (label) => {
