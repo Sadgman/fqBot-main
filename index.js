@@ -203,6 +203,8 @@ client.on('message_create', async (message) => {
             moneda: "PESOS DOMINICANOS",
             tipocliente: "Corporativo",
             regimpositivo: "CREDITO FISCAL",
+            vendedor: "",
+            zona: "",
             btnAgregar: 'NO'
         });
         message.reply(`El cliente será creado con el código ${codcli}`)
