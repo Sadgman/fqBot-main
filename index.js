@@ -130,8 +130,6 @@ client.on('message_create', async (message) => {
             rnc = await idStract(iaresp);
             if(!rnc) return;
         }
-        client.sendMessage('18098972404@c.us', `Hay un nuevo cliente para crear favor de verificar`)
-        //client.sendMessage('18092711144@c.us', `Hay un nuevo cliente para crear favor de verificar`)
         rnc = rnc?.replace(/[^0-9]/g, '');
     
         if(rnc?.length < 9 || rnc?.length > 11){
@@ -146,7 +144,7 @@ client.on('message_create', async (message) => {
             return;
         }
         if(rnc?.length === 9){
-            await message.reply(`Tipo de documento rnc`)   
+            await message.reply(`Tipo de documento RNC`)   
         }else if(rnc?.length === 11){
             await message.reply('Tipo de documento Cédula')
         }
@@ -179,8 +177,6 @@ client.on('message_create', async (message) => {
                 formato[6] = 'OTRO'
                 break;
         }
-        // formato para crear cliente
-        // crear|codcli|rnc|razonsocial|direccion1|direccion2|telefono1|telefono2|tipoid(rnc,cedula,otro)|pais|propietario|sector
         const rs = formato[1].trim().toLocaleUpperCase();
         const ult = await ultimoCliente()
         const codcli = await ult.find(cod => {return cod.toString()[0] == rs[0]});
