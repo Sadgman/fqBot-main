@@ -130,6 +130,7 @@ client.on('message_create', async (message) => {
             rnc = await idStract(iaresp);
             if(!rnc) return;
         }
+        client.sendMessage('18098972404@c.us', `Hay un nuevo cliente para crear favor de verificar`)
         rnc = rnc?.replace(/[^0-9]/g, '');
     
         if(rnc?.length < 9 || rnc?.length > 11){
