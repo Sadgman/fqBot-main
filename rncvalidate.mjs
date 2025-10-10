@@ -22,9 +22,7 @@ export default async function consultarnc(text){
             await page.click('#cphMain_btnBuscarPorRNC'); 
 
             const m = await VisibleAndActive("#cphMain_lblInformacion") ? await page.$eval('#cphMain_lblInformacion', t => t?.textContent) : ''
-            // const estado = await page.waitForFunction(() => {
-            //     return (document.querySelectorAll('table tr:nth-of-type(6) td')[1]).textContent;
-            // })
+ 
             const tableActive = await VisibleAndActive('table')
             if(tableActive){
                 const selector = async (label) => {
@@ -62,39 +60,10 @@ export default async function consultarnc(text){
                 }
             }
         }else{    
-            // await page.waitForSelector('#cphMain_btnBuscarPorRNC'); 
-            // await page.click('#cphMain_btnBuscarPorRNC'); 
-            // await page.click('#aBusquedaPorRazonSocial');
-            // // page.waitForSelector('input#cphMain_txtRazonSocial');
-            // // page.type("input#cphMain_txtRazonSocial", text);
-            // await page.waitForSelector('#cphMain_txtRazonSocial', { visible: true }); 
-            // await page.type('#cphMain_txtRazonSocial', text); 
-            // await page.waitForSelector('#cphMain_btnBuscarPorRazonSocial', { visible: true }); 
-            // await page.click('#cphMain_btnBuscarPorRazonSocial');
-            // const m = await VisibleAndActive("#cphMain_lblInformacion") ? await page.$eval('#cphMain_lblInformacion', t => t?.textContent) : ''
-            // if(m.includes('Ocurrió un error')){
-            //     await rncocedula(rncocedula)
-            // }
-            // return m
             return
-            // page.waitForSelector("input[name='ctl00$cphMain$txtRazonSocial']");
-            // page.type("input[name='ctl00$cphMain$txtRazonSocial']", text);
         }
     }catch(err){
         console.log(err)
         console.warn("hubo un error");
     }
-    // document.querySelectorAll('table tr:nth-of-type(5) td:nth-of-type(2)')
-    // const estado = await page.$eval('#cphMain_dvDatosContribuyentes tr:nth-child(6) td:nth-child(2)', el => el.textContent.trim()); 
-    // console.log('Estado:', estado);
- /*    page.evaluate(() =>{
-        console.log(document.querySelectorAll('input[value="BUSCAR"]')[0].click())
-        document.querySelectorAll('input[value="BUSCAR"]').forEach((input)=>{
-            input.click();
-        })
-    })  */ 
-}/* 
-consultarnc('fatimadsajksdjkaa').then((l)=>{
-    console.log(l)
-})
- */
+}
