@@ -37,7 +37,7 @@ export default async function validatePerson(text) {
                     comercialname: info[2],
                     category: info[4],
                     status: info[1],
-                    cedulaornc: rncocedula?.length === 9 ? "es un rnc" : "es una cedula"
+                    typodoc: rncocedula?.length === 9 ? "es un rnc" : "es una cedula"
             
                 }
             }else{

@@ -49,7 +49,7 @@ export default async function consultarnc(text){
                     admlocal: info[7],
                     facElec: info[8],
                     VHM: info[9],
-                    cedulaornc: rncocedula?.length === 9 ? "es un rnc" : "es una cedula"
+                    typodoc: rncocedula?.length === 9 ? "es un rnc" : "es una cedula"
                 }
             }else{
                 const msg = await page.evaluate(async () =>{
