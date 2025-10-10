@@ -1,5 +1,4 @@
 import spawn from 'child_process';
-        client.sendMessage('18098972404@c.us', `Hay un nuevo cliente para crear favor de verificar`)
 /*    
     Dejando algo en claro: 
     tuve que desarrollar esto de esta forma porque no me dejan hacer consultas en la base de datos. 
