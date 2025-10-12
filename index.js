@@ -1,12 +1,14 @@
-const { Client, LocalAuth } = require('whatsapp-web.js');
-const qrcode = require('qrcode-terminal');
-const prapido = import ('./pasorapido.mjs')
-const Fcc = require('./utils/ia/FormatClientConvert.js')
-const fs = require('fs');
-const bf = require('./bfclient.js');
-const { default: ultimoCliente } = require('./utils/excel/ultimoCliente.js');
-const FCclient = require('./utils/ia/FormatClientCreate.js')
-const dotenv = require('dotenv');
+import pkg from 'whatsapp-web.js';
+const { Client, LocalAuth } = pkg;
+import qrcode from 'qrcode-terminal';
+import Fcc from './utils/ia/FormatClientConvert.js';
+import fs from 'fs';
+import bf from './bfclient.js';
+import ultimoCliente from './utils/excel/ultimoCliente.js';
+import FCclient from './utils/ia/FormatClientCreate.js';
+import dotenv from 'dotenv';
+import prapido from 'pasorapido-balance-checker';
+
 dotenv.config();
 
 const client = new Client({
@@ -31,16 +33,29 @@ function qa(palabra){
     }
     return palabra;
 }
-
+const pasor = await prapido.init({
+    headless: true,
+    userDataDir: './data'
+})
 async function comp(){
     try{
-        const res = await (await prapido).prapido()
+        let res;
+        try{
+            res = await pasor.getBalance();
+        }
+        catch(e){
+            if(e instanceof prapido.RequireLogin){
+                await pasor.WritetwoFactor(process.env.nombre, process.env.contra)
+                client.sendMessage('18098972404@c.us', 'Se requiere autenticación para acceder a la cuenta de paso rápido utiliza el comando . + v + <codigo>.')
+                return;
+            }
+        }
         if( res <= 35000){
             client.sendMessage('18092711144@c.us', `Se requiere recarga de paso rapido saldo actual de ${res}`)
         }
         setInterval(async () => {
             for(let i=0;i<=2; i++){
-                const res = await (await prapido).prapido()
+                const res = await pasor.getBalance();
                 console.log(res <= 35000? `Se require recarga  saldo actual ${res}`: false)
                 if( res <= 40000){
                     client.sendMessage('18092711144@c.us', `Se requiere recarga de paso rapido saldo actual de ${res}`)
@@ -210,6 +225,14 @@ client.on('message_create', async (message) => {
     if(msg == 'ping'){
         message.reply('pong')
     }
+    if(msg.includes(".v")){
+        const code = msg.replace('.v', '').trim();
+        if(code.length < 4){
+            message.reply('Por favor ingresa un código válido de 4 dígitos o más.');
+            return;
+        }
+        if(await pasor.WriteCode(code)) await comp();
+    }
     if(msg.includes(".u")){
         if(msg.length > 2){
             const rs = msg.replace('.u', '').trim().toLocaleUpperCase();
@@ -247,7 +270,7 @@ client.on('message_create', async (message) => {
     }
     }
     if(msg === ".paso"){
-        const res = await (await prapido).prapido()
+        const res = await pasor.getBalance()
         message.reply(`El balance del paso rapido es de ${res}`)
     }
 })
