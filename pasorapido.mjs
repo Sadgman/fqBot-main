@@ -15,21 +15,21 @@ export async function prapido() {
             if(pestana == page.mainFrame()){
                 const urllogin = pestana.url()
                 if(urllogin === "https://clientes.pasorapido.gob.do/login"){
-                        const checkbox = "input[type='checkbox']" 
-                        await page.waitForSelector(nombre)
-                        const insertText = async (selector, valor) => { 
-                            await page.evaluate((selector, valor)=>{
-                                document.querySelector(selector).value = valor
-                            }, selector, valor)
-                            await page.type(selector, '')
-                        }
-                        await insertText("input[name='email']", process.env.nombre);
-                        await insertText("input[name='password']", process.env.contra);                    
-                        await page.waitForSelector(checkbox)
-                        await page.click(checkbox)
-                        await page.click("button[type='submit']")
-                        await page.waitForNavigation()
-                        await page.waitForNetworkIdle()
+                    const checkbox = "input[type='checkbox']" 
+                    await page.waitForSelector("input[name='email']")
+                    const insertText = async (selector, valor) => { 
+                        await page.evaluate((selector, valor)=>{
+                            document.querySelector(selector).value = valor
+                        }, selector, valor)
+                        await page.type(selector, '')
+                    }
+                    await insertText("input[name='email']", process.env.nombre);
+                    await insertText("input[name='password']", process.env.contra);                    
+                    await page.waitForSelector(checkbox)
+                    await page.click(checkbox)
+                    await page.click("button[type='submit']")
+                    await page.waitForNavigation()
+                    await page.waitForNetworkIdle()
                 }
             }
         } catch (error) {
