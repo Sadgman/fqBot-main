@@ -1,10 +1,11 @@
-import puppeteer from 'puppeteer'
+import puppeteer from 'puppeteer-core'
 import dotenv from 'dotenv'
 dotenv.config()
 
 const browser = await puppeteer.launch({
     headless: false,
-    userDataDir: './data'
+    userDataDir: './data',
+    executablePath: process.env.executablePath
 })
 const page = await browser.newPage()
 
@@ -17,14 +18,15 @@ export async function prapido() {
                         const nombre = "input[name='email']"
                         const contra = "input[name='password']"
                         const checkbox = "input[type='checkbox']" 
-                        const getValue = async (selector) => {
-                            return await page.evaluate((selector)=>{
-                                return document.querySelector(selector).value
-                            }, selector)
-                        }
                         await page.waitForSelector(nombre)
-                        await getValue(nombre) == '' ? await page.type(nombre, process.env.nombre) : null
-                        await getValue(contra) == '' ? await page.type(contra, process.env.contra) : null
+                        const insertText = async (selector, valor) => { 
+                            await page.evaluate((selector, valor)=>{
+                                document.querySelector(selector).value = valor
+                            }, selector, valor)
+                            await page.type(selector, '')
+                        }
+                        await insertText(nombre, process.env.nombre);
+                        await insertText(contra, process.env.contra);                    
                         await page.waitForSelector(checkbox)
                         await page.click(checkbox)
                         await page.click("button[type='submit']")
