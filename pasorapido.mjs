@@ -15,8 +15,6 @@ export async function prapido() {
             if(pestana == page.mainFrame()){
                 const urllogin = pestana.url()
                 if(urllogin === "https://clientes.pasorapido.gob.do/login"){
-                        const nombre = "input[name='email']"
-                        const contra = "input[name='password']"
                         const checkbox = "input[type='checkbox']" 
                         await page.waitForSelector(nombre)
                         const insertText = async (selector, valor) => { 
@@ -25,8 +23,8 @@ export async function prapido() {
                             }, selector, valor)
                             await page.type(selector, '')
                         }
-                        await insertText(nombre, process.env.nombre);
-                        await insertText(contra, process.env.contra);                    
+                        await insertText("input[name='email']", process.env.nombre);
+                        await insertText("input[name='password']", process.env.contra);                    
                         await page.waitForSelector(checkbox)
                         await page.click(checkbox)
                         await page.click("button[type='submit']")
