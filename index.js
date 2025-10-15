@@ -58,7 +58,6 @@ async function comp(){
         setInterval(async () => {
             for(let i=0;i<=2; i++){
                 const res = await pasor.getBalance();
-                console.log(res <= 35000? `Se require recarga  saldo actual ${res}`: false)
                 if( res <= 40000){
                     client.sendMessage('18092711144@c.us', `Se requiere recarga de paso rapido saldo actual de ${res}`)
                 }
@@ -143,7 +142,7 @@ client.on('message_create', async (message) => {
         let rnc = await idStract(msg)
 
         if(!rnc){
-            const iaresp = await Fcc.default(msg);
+            const iaresp = await Fcc(msg);
             rnc = await idStract(iaresp);
             if(!rnc) return;
         }
@@ -181,7 +180,7 @@ client.on('message_create', async (message) => {
     if(msg === '.c' && message.hasQuotedMsg && unrestrictedNumers.includes(contact.id.user)){
         const bf = await import('./bfclient.js');
         message.reply('creando cliente...')
-        let msdg = await FCclient.default(await qa(msgq))
+        let msdg = await FCclient(await qa(msgq))
         msdg = await qa(msdg);
 
         const formato = msdg.split('|')
