@@ -289,7 +289,7 @@ client.on('message_create', async (message) => {
                     encoding: 'base64'
                 }
             });   
-            message.reply('Correo enviado exitosamente')
+            message.reply('Correo enviado')
         }
     }
     if(msg === ".paso"){
