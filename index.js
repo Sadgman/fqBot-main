@@ -3,11 +3,13 @@ const { Client, LocalAuth } = pkg;
 import qrcode from 'qrcode-terminal';
 import Fcc from './utils/ia/FormatClientConvert.js';
 import fs from 'fs';
-import bf from './bfclient.js';
 import ultimoCliente from './utils/excel/ultimoCliente.js';
 import FCclient from './utils/ia/FormatClientCreate.js';
 import dotenv from 'dotenv';
+import mail from './utils/mail.js'
+
 import prapido from 'pasorapido-balance-checker';
+import { arch } from 'os';
 
 dotenv.config();
 
@@ -35,7 +37,7 @@ function qa(palabra){
 }
 const pasor = await prapido.init({
     headless: true,
-    userDataDir: './data'
+    userDataDir: './pasorapido',
 })
 async function comp(){
     try{
@@ -177,6 +179,7 @@ client.on('message_create', async (message) => {
     }
     //Crear cliente
     if(msg === '.c' && message.hasQuotedMsg && unrestrictedNumers.includes(contact.id.user)){
+        const bf = await import('./bfclient.js');
         message.reply('creando cliente...')
         let msdg = await FCclient.default(await qa(msgq))
         msdg = await qa(msdg);
@@ -262,12 +265,32 @@ client.on('message_create', async (message) => {
         }
     }
     if(message.body.toLocaleLowerCase() === '!t' || message.body.toLocaleLowerCase().startsWith('!t')){
-    const parts = message.body.split(' ');
-    //verifico si parts tiene una longitud mayor a uno y si no incluye la palabra !t
-    if(parts.length > 1 && !parts.slice(1).join(' ').toLocaleLowerCase().includes('!t')){
-        //si es asi mando el texto a la funcion para que lo envie
-        mentionAll(parts.slice(1).join(' '));
+        const parts = message.body.split(' ');
+        //verifico si parts tiene una longitud mayor a uno y si no incluye la palabra !t
+        if(parts.length > 1 && !parts.slice(1).join(' ').toLocaleLowerCase().includes('!t')){
+            //si es asi mando el texto a la funcion para que lo envie
+            mentionAll(parts.slice(1).join(' '));
+        }
     }
+    if(msg == ".s"){
+        if((quotedMsg?.hasMedia || message?.hasMedia)){
+            const docq = quotedMsg?.hasMedia ? await quotedMsg.downloadMedia() : await message.downloadMedia()
+            message.reply('Enviando correo...')
+            await mail({
+                mensaje: 'Saludos, adjunto comprobante de recarga paso rápido Farmoquimica Nacional Rnc 106-01204-1 Cuenta# 75363',
+                uer: process.env.usermail,
+                asunto: 'Recarga de paso rápido',
+                email: "serviciospasorapido@cardnet.com.do",
+                mentions: ['tecnologia@farquina.com'],
+                password: process.env.passmail,
+                archivo: {
+                    filename: 'comprobante' + docq.mimetype.replace('application/', '.'),
+                    content: docq.data,
+                    encoding: 'base64'
+                }
+            });   
+            message.reply('Correo enviado exitosamente')
+        }
     }
     if(msg === ".paso"){
         const res = await pasor.getBalance()
