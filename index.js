@@ -253,7 +253,7 @@ client.on('message_create', async (message) => {
     // Funcion para mencionar a todos los integrantes del grupo
     async function mentionAll(text){
         //compruebo si el chat es un grupo, si el usuario es admin o si mi numero es el que hace la llamada.
-        if((chat.isGroup && participantes(contact.id.user)) || Alastor_Number.includes(contact.id.user)){
+        if((chat.isGroup && unrestrictedNumers.includes(contact.id.user)) || chat.id.user === '120363202084167394'){
 
             let mention = [];
             //busco dentro del array para introducir el id de todos los usuarios serializados dentro de otro array
@@ -272,6 +272,15 @@ client.on('message_create', async (message) => {
             mentionAll(parts.slice(1).join(' '));
         }
     }
+    if(msg.includes('.cotizar')){
+        msg = msg.replace('.cotizar', '').trim();
+        const mensaje = `Saludos buenas, puede cotizarme:\n${msg} a nombre de Farquina por favor y gracias.`
+        const empresas = ['18095780076', '18095780426', '18095776975', '18492141933', '18295723056']
+        empresas.forEach(async (empresa) => {
+            await client.sendMessage(`${empresa}@c.us`, mensaje)
+        });
+        message.reply('Cotización solicitada')
+    }
     if(msg == ".s"){
         if((quotedMsg?.hasMedia || message?.hasMedia)){
             const docq = quotedMsg?.hasMedia ? await quotedMsg.downloadMedia() : await message.downloadMedia()
@@ -284,7 +293,7 @@ client.on('message_create', async (message) => {
                 mentions: ['tecnologia@farquina.com'],
                 password: process.env.passmail,
                 archivo: {
-                    filename: 'comprobante' + docq.mimetype.replace('application/', '.'),
+                    filename: 'comprobante',
                     content: docq.data,
                     encoding: 'base64'
                 }
