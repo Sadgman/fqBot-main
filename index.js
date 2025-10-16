@@ -2,14 +2,13 @@ import pkg from 'whatsapp-web.js';
 const { Client, LocalAuth } = pkg;
 import qrcode from 'qrcode-terminal';
 import Fcc from './utils/ia/FormatClientConvert.js';
+import runCommand from './utils/command.js';
 import fs from 'fs';
 import ultimoCliente from './utils/excel/ultimoCliente.js';
 import FCclient from './utils/ia/FormatClientCreate.js';
 import dotenv from 'dotenv';
 import mail from './utils/mail.js'
-
 import prapido from 'pasorapido-balance-checker';
-import { arch } from 'os';
 
 dotenv.config();
 
@@ -89,7 +88,7 @@ const unrestrictedNumers = [
 ]
 
 client.on('message_create', async (message) => {
-    if(message?.body == '' || !message?.body){
+    if(!message){
         return;
     }
     const chat = await message.getChat()
@@ -280,24 +279,39 @@ client.on('message_create', async (message) => {
         });
         message.reply('Cotización solicitada')
     }
+    async function sendmail(docq){
+        message.reply('Enviando correo...')
+        await mail({
+            mensaje: 'Saludos, adjunto comprobante de recarga paso rápido Farmoquimica Nacional Rnc 106-01204-1 Cuenta# 75363',
+            uer: process.env.usermail,
+            asunto: 'Recarga de paso rápido',
+            //"serviciospasorapido@cardnet.com.do"
+            email: "asistente.tecnologia@farquina.com",
+            //"j.disla@farquina.com"
+            mentions: ['tecnologia@farquina.com'],
+            password: process.env.passmail,
+            archivo: {
+                filename: 'comprobante' + '.' + docq.mimetype.split('/')[1],
+                content: docq.data,
+                encoding: 'base64'
+            }
+        });   
+        message.reply('Correo enviado')
+    }
+    if(message?.hasMedia){
+        const media = await message.downloadMedia();
+        fs.writeFileSync('media.png', media.data, {encoding: 'base64'});
+        if(media.mimetype.includes('image')){
+            const paso = await runCommand(`easyocr -l es es -f media.png --detail=0 --gpu=True`);
+            if(paso.includes('BHD') && paso.includes("106012041") && paso.toLocaleLowerCase().includes('recarga')){
+                await sendmail(media)
+            }
+        }
+    }
     if(msg == ".s"){
         if((quotedMsg?.hasMedia || message?.hasMedia)){
             const docq = quotedMsg?.hasMedia ? await quotedMsg.downloadMedia() : await message.downloadMedia()
-            message.reply('Enviando correo...')
-            await mail({
-                mensaje: 'Saludos, adjunto comprobante de recarga paso rápido Farmoquimica Nacional Rnc 106-01204-1 Cuenta# 75363',
-                uer: process.env.usermail,
-                asunto: 'Recarga de paso rápido',
-                email: "serviciospasorapido@cardnet.com.do",
-                mentions: ['tecnologia@farquina.com'],
-                password: process.env.passmail,
-                archivo: {
-                    filename: 'comprobante',
-                    content: docq.data,
-                    encoding: 'base64'
-                }
-            });   
-            message.reply('Correo enviado')
+            await sendmail(docq)
         }
     }
     if(msg === ".paso"){
