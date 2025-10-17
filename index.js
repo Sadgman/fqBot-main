@@ -285,10 +285,8 @@ client.on('message_create', async (message) => {
             mensaje: 'Saludos, adjunto comprobante de recarga paso rápido Farmoquimica Nacional Rnc 106-01204-1 Cuenta# 75363',
             uer: process.env.usermail,
             asunto: 'Recarga de paso rápido',
-            //"serviciospasorapido@cardnet.com.do"
-            email: "asistente.tecnologia@farquina.com",
-            //"j.disla@farquina.com"
-            mentions: ['tecnologia@farquina.com'],
+            email: "serviciospasorapido@cardnet.com.do",
+            mentions: ['tecnologia@farquina.com', 'j.disla@farquina.com'],
             password: process.env.passmail,
             archivo: {
                 filename: 'comprobante' + '.' + docq.mimetype.split('/')[1],
