@@ -177,7 +177,6 @@ client.on('message_create', async (message) => {
     }
     //Crear cliente
     if(msg === '.c' && message.hasQuotedMsg && unrestrictedNumers.includes(contact.id.user)){
-        const bf = await import('./bfclient.js');
         message.reply('creando cliente...')
         let msdg = await FCclient(await qa(msgq))
         msdg = await qa(msdg);
@@ -198,6 +197,7 @@ client.on('message_create', async (message) => {
         const ult = await ultimoCliente()
         const codcli = await ult.find(cod => {return cod.toString()[0] == rs[0]});
         let vendedor = JSON.parse(fs.readFileSync('vendedores.json'))
+        const bf = await import('./bfclient.js');
         bf.default({
             Codcli: codcli,
             RNC: formato[0],
@@ -221,6 +221,7 @@ client.on('message_create', async (message) => {
             zona: "",
             btnAgregar: 'NO'
         });
+        bf.cerrarProceso();
         message.reply(`El cliente será creado con el código ${codcli}`)
     }
     if(msg == 'ping'){
@@ -282,7 +283,7 @@ client.on('message_create', async (message) => {
     async function sendmail(docq){
         message.reply('Enviando correo...')
         await mail({
-            mensaje: 'Saludos, adjunto comprobante de recarga paso rápido Farmoquimica Nacional Rnc 106-01204-1 Cuenta# 75363',
+            mensaje: 'Saludos, adjunto comprobante de recarga paso rápido Farmoquimica Nacional Rnc 106-01204-1 Cuenta# 75363\nPor favor enviar el comprobante.',
             uer: process.env.usermail,
             asunto: 'Recarga de paso rápido',
             email: "serviciospasorapido@cardnet.com.do",
@@ -295,21 +296,24 @@ client.on('message_create', async (message) => {
             }
         });   
         message.reply('Correo enviado')
+        return;
     }
     if(message?.hasMedia){
         const media = await message.downloadMedia();
-        fs.writeFileSync('media.png', media.data, {encoding: 'base64'});
-        if(media.mimetype.includes('image')){
+        if(media.mimetype.includes('image') || media.mimetype.includes('pdf')){
+            fs.writeFileSync('media.png', media.data, {encoding: 'base64'});
             const paso = await runCommand(`easyocr -l es es -f media.png --detail=0 --gpu=True`);
             if(paso.includes('BHD') && paso.includes("106012041") && paso.toLocaleLowerCase().includes('recarga')){
                 await sendmail(media)
             }
         }
+        return;
     }
     if(msg == ".s"){
         if((quotedMsg?.hasMedia || message?.hasMedia)){
             const docq = quotedMsg?.hasMedia ? await quotedMsg.downloadMedia() : await message.downloadMedia()
             await sendmail(docq)
+            return;
         }
     }
     if(msg === ".paso"){
